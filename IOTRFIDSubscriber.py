@@ -24,13 +24,13 @@ def on_connect(client, userdata, flags, rc):
 
     client.subscribe("IOTRFID/#")
 
-# The callback for when a PUBLISH message is received from the server.
+# he callback for when a PUBLISH message is received from the server.
 
 def on_message(client, userdata, msg):
-   print(msg.topic+" "+str(msg.payload))
+   print(msg.topic+" "+str(msg.payload.decode()))
 
-   result = json.loads(filter_non_printable(msg.payload))  # result is now a dict / filter start and stop characters
-
+   result = json.loads(msg.payload.decode())  # result is now a dict / filter start and stop characters
+   print(result)
    InventoryRFID = result['d']['RFID_ID']
 
 
@@ -40,18 +40,22 @@ def on_message(client, userdata, msg):
    print("Inventory Item = " + InventoryRFID)
    print
 
+# main program
+
 client = mqtt.Client()
 
 client.on_connect = on_connect
-
 client.on_message = on_message
 
+
 client.connect("localhost", 1883, 60)
+
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
 # Other loop*() functions are available that give a threaded interface and a
 # manual interface.
+
 
 client.loop_forever()
 
